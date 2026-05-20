@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Andrea Di Luca"/>
+  <title>ndrdlc</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:   #fafaf7;
+      --ink:  #0a0a0a;
+      --rule: #0a0a0a;
+      --fast: 120ms;
+      --med:  280ms;
+      --slow: 500ms;
+      --ease: cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.55;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+      padding: 40px 40px 80px;
+    }
+
+    .wrap { max-width: 920px; margin: 0 auto; }
+
+    /* ─── REVEAL ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity var(--slow) var(--ease), transform var(--slow) var(--ease);
+      will-change: opacity, transform;
+    }
+    .reveal.in { opacity: 1; transform: none; }
+
+    /* ─── TOP META BAR ─── */
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .meta .clock { font-variant-numeric: tabular-nums; }
+    .meta .clock::before { content: "[ "; opacity: 0.5; }
+    .meta .clock::after  { content: " ]"; opacity: 0.5; }
+
+    /* ─── HEADER ─── */
+    header { padding: 80px 0 60px; }
+
+    .header-row {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 32px;
+      align-items: start;
+    }
+
+    /* ─── PORTRAIT ─── */
+    .portrait { width: 160px; }
+    .portrait .box {
+      aspect-ratio: 1/1;
+      background: var(--ink);
+      position: relative;
+      overflow: hidden;
+      outline: 1px solid var(--rule);
+      outline-offset: -1px;
+      transition: outline-offset var(--med) var(--ease);
+    }
+    .portrait .box:hover { outline-offset: 4px; }
+    .portrait .box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(1) contrast(1.05);
+      transition: filter var(--med) var(--ease);
+    }
+    .portrait .box:hover img { filter: grayscale(1) contrast(1.15); }
+    /* placeholder */
+    .portrait .box::before {
+      content: "[ SELF ]";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg);
+      font-size: 10px;
+      letter-spacing: 2px;
+      opacity: 0.4;
+      transition: opacity var(--med) var(--ease), letter-spacing var(--med) var(--ease);
+    }
+    .portrait .box:hover::before { opacity: 0.9; letter-spacing: 4px; }
+    .portrait .box:has(img)::before { display: none; }
+
+    .portrait figcaption {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 10px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: 1px solid var(--rule);
+      border-top: 0;
+    }
+    .portrait figcaption b { font-weight: 500; }
+    .portrait figcaption span { opacity: 0.6; }
+
+    h1.name {
+      font-family: inherit;
+      font-weight: 700;
+      font-size: clamp(36px, 7vw, 64px);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 24px;
+    }
+    .cursor {
+      display: inline-block;
+      width: 0.55em;
+      height: 0.95em;
+      background: var(--ink);
+      vertical-align: -0.06em;
+      margin-left: 0.08em;
+      animation: blink 1.05s steps(2, start) infinite;
+    }
+    @keyframes blink {
+      to { background: transparent; }
+    }
+
+    .role {
+      font-size: 14px;
+      max-width: 560px;
+      margin-bottom: 24px;
+    }
+    .role b { font-weight: 500; }
+
+    /* ─── INLINE LINKS (slide-fill) ─── */
+    .links-inline {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .fill {
+      color: var(--ink);
+      text-decoration: none;
+      background-image: linear-gradient(var(--ink), var(--ink));
+      background-repeat: no-repeat;
+      background-size: 100% 1px;
+      background-position: 0 100%;
+      padding: 0 2px;
+      transition: background-size var(--med) var(--ease), color var(--med) var(--ease);
+    }
+    .fill:hover {
+      background-size: 100% 100%;
+      color: var(--bg);
+    }
+
+    /* ─── SECTION HEADER ─── */
+    .sec {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 16px;
+      align-items: baseline;
+      padding-top: 8px;
+      padding-bottom: 8px;
+      border-top: 1px solid var(--rule);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 500;
+      margin-top: 80px;
+      margin-bottom: 32px;
+    }
+    .sec .count { font-weight: 400; font-variant-numeric: tabular-nums; }
+    .sec .count .n { display: inline-block; min-width: 1ch; }
+
+    /* ─── WORK TABLE ─── */
+    .work {
+      display: flex;
+      flex-direction: column;
+    }
+    .work .row {
+      display: grid;
+      grid-template-columns: 56px 64px 1fr auto;
+      gap: 24px;
+      align-items: baseline;
+      padding: 14px 12px;
+      border-bottom: 1px solid var(--rule);
+      position: relative;
+      isolation: isolate;
+      text-decoration: none;
+      color: var(--ink);
+      overflow: hidden;
+    }
+    .work .row::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--ink);
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform var(--med) var(--ease);
+      z-index: -1;
+    }
+    .work .row:hover::before { transform: scaleX(1); }
+    .work .row > * {
+      transition: color var(--med) var(--ease);
+    }
+    .work .row:hover > * { color: var(--bg); }
+
+    .work .id { font-size: 11px; opacity: 0.5; }
+    .work .row:hover .id { opacity: 0.9; }
+    .work .yr { font-size: 11px; }
+    .work .tt { font-weight: 500; }
+    .work .tt .tags {
+      font-weight: 400;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      opacity: 0.6;
+      margin-left: 14px;
+      transition: opacity var(--med) var(--ease);
+    }
+    .work .row:hover .tt .tags { opacity: 1; }
+    .work .lk {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      justify-self: end;
+    }
+    .work .lk::after {
+      content: " →";
+      display: inline-block;
+      transition: transform var(--med) var(--ease);
+    }
+    .work .row:hover .lk::after { transform: translate(4px, -4px); }
+
+    /* ─── IMAGE / VIDEO GRID (DIFFUSION) ─── */
+    .img-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .img-grid figure { background: var(--bg); }
+    .img-grid .box {
+      aspect-ratio: 1/1;
+      background: var(--ink);
+      position: relative;
+      overflow: hidden;
+      outline: 1px solid var(--rule);
+      outline-offset: -1px;
+      transition: outline-offset var(--med) var(--ease);
+    }
+    .img-grid .box:has(video) { cursor: pointer; }
+    .img-grid .box:hover { outline-offset: 4px; }
+    .img-grid .box img,
+    .img-grid .box video {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: opacity var(--med) var(--ease);
+    }
+    /* placeholder text — only when no media */
+    .img-grid .box::before {
+      content: "[ VIDEO ]";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg);
+      font-size: 11px;
+      letter-spacing: 2px;
+      opacity: 0.4;
+      transition: opacity var(--med) var(--ease), letter-spacing var(--med) var(--ease);
+      pointer-events: none;
+    }
+    .img-grid .box:hover::before {
+      opacity: 0.9;
+      letter-spacing: 4px;
+    }
+    .img-grid .box:has(img)::before,
+    .img-grid .box:has(video)::before { display: none; }
+
+    /* [ LOOP ] / [ PAUSED ] indicator on videos */
+    .img-grid .box:has(video)::after {
+      content: "[ LOOP ]";
+      position: absolute;
+      top: 8px; right: 10px;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      color: var(--bg);
+      opacity: 0.65;
+      pointer-events: none;
+      font-weight: 400;
+    }
+    .img-grid .box.paused::after { content: "[ PAUSED ]"; opacity: 0.85; }
+
+    .img-grid figcaption {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 14px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: 1px solid var(--rule);
+      border-top: 0;
+    }
+    .img-grid figcaption b { font-weight: 500; }
+    .img-grid figcaption span { opacity: 0.6; }
+
+    /* ─── SEE-MORE LINK ─── */
+    .see-more {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      padding: 18px 12px;
+      margin-top: 16px;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      text-decoration: none;
+      color: var(--ink);
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+    }
+    .see-more::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--ink);
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform var(--med) var(--ease);
+      z-index: -1;
+    }
+    .see-more:hover::before { transform: scaleX(1); }
+    .see-more > * { transition: color var(--med) var(--ease); }
+    .see-more:hover > * { color: var(--bg); }
+    .see-more .lbl b { font-weight: 500; }
+    .see-more .lbl .dim { opacity: 0.6; margin-left: 8px; }
+    .see-more:hover .lbl .dim { opacity: 1; }
+    .see-more .arrow {
+      display: inline-block;
+      margin-left: 6px;
+      transition: transform var(--med) var(--ease);
+    }
+    .see-more:hover .arrow { transform: translate(4px, -4px); }
+    /* ─── PHOTO GRID ─── */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+    }
+    .photo-grid figure { background: var(--bg); }
+    .photo-grid .box {
+      aspect-ratio: 4/3;
+      background: var(--ink);
+      position: relative;
+      overflow: hidden;
+      outline: 1px solid var(--rule);
+      outline-offset: -1px;
+      transition: outline-offset var(--med) var(--ease);
+    }
+    .photo-grid .box:hover { outline-offset: 4px; }
+    .photo-grid .box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo-grid .box::before {
+      content: "[ PHOTO ]";
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--bg);
+      font-size: 10px;
+      letter-spacing: 2px;
+      opacity: 0.4;
+      transition: opacity var(--med) var(--ease), letter-spacing var(--med) var(--ease);
+    }
+    .photo-grid .box:hover::before {
+      opacity: 0.9;
+      letter-spacing: 4px;
+    }
+    .photo-grid .box:has(img)::before { display: none; }
+    .photo-grid figcaption {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 12px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: 1px solid var(--rule);
+      border-top: 0;
+    }
+    .photo-grid figcaption b { font-weight: 500; }
+    .photo-grid figcaption span { opacity: 0.6; }
+
+    /* ─── STACK LIST ─── */
+    .stack {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 12px 24px;
+      font-size: 14px;
+    }
+    .stack .k {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding-top: 14px;
+      border-top: 1px solid var(--rule);
+    }
+    .stack .v {
+      padding-top: 14px;
+      border-top: 1px solid var(--rule);
+    }
+
+    /* ─── CONTACT — DOTTED LEADERS ─── */
+    .contact .row {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .contact .row:first-child { border-top: 1px solid var(--rule); }
+    .contact .k {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      flex-shrink: 0;
+    }
+    .contact .dots {
+      flex: 1;
+      border-bottom: 1px dotted var(--ink);
+      transform: translateY(-4px);
+      min-width: 40px;
+    }
+    .contact .v { font-size: 14px; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      margin-top: 100px;
+      padding-top: 14px;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    ::selection { background: var(--ink); color: var(--bg); }
+
+    /* ─── REDUCED MOTION ─── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+      }
+      .reveal { opacity: 1; transform: none; }
+      .cursor { animation: none; background: var(--ink); }
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 720px) {
+      body { padding: 24px 20px 60px; }
+      .meta { font-size: 10px; gap: 8px; flex-wrap: wrap; }
+      .header-row { grid-template-columns: 1fr; gap: 24px; }
+      .portrait { width: 120px; }
+      .work .row {
+        grid-template-columns: 48px 1fr;
+        gap: 4px 12px;
+        padding: 14px 8px;
+      }
+      .work .id { grid-row: 1; }
+      .work .yr { grid-row: 1; grid-column: 2; }
+      .work .tt { grid-row: 2; grid-column: 2; }
+      .work .lk { grid-row: 3; grid-column: 2; justify-self: start; }
+      .photo-grid { grid-template-columns: 1fr 1fr; }
+      .stack { grid-template-columns: 1fr; gap: 4px; }
+      .stack .v { padding-top: 4px; border-top: 0; }
+      .contact .row { flex-wrap: wrap; }
+      .contact .dots { display: none; }
+    }
+    @media (max-width: 460px) {
+      .img-grid { grid-template-columns: 1fr; }
+      .photo-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wrap">
+
+    <!-- ─── TOP META ─── -->
+    <div class="meta reveal">
+      <span>Andrea Di Luca — Folio v.1</span>
+      <span class="clock" id="clock">--:--:--</span>
+      <span>Copenhagen, <span id="year"></span></span>
+    </div>
+
+    <!-- ─── HEADER ─── -->
+    <header class="reveal">
+      <div class="header-row">
+
+        <figure class="portrait">
+          <div class="box">
+             <img src="assets/photos/me.jpg" alt="Andrea Di Luca" /> 
+          </div>
+          <figcaption><b>[ ME ]</b><span>2026</span></figcaption>
+        </figure>
+
+        <div class="header-content">
+          <h1 class="name">Andrea Di Luca<span class="cursor" aria-hidden="true"></span></h1>
+          <p class="role">
+            <b>Data scientist.</b> Born in Rome, currently based in Copenhagen.
+            Here to have an online archive of my stuff.
+          </p>
+          <div class="links-inline">
+            <a class="fill" href="mailto:andreadiluca10@gmail.com">Email</a>
+            <a class="fill" href="https://github.com/ndrdlc">GitHub</a>
+            <a class="fill" href="https://linkedin.com/in/andreadiluca10">LinkedIn</a>
+            <a class="fill" href="https://instagram.com/ndrdlc">Instagram</a>
+            <a class="fill" href="https://www.lomography.com/homes/ndrdlc">Lomography</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ─── 01 WORK ─── -->
+    <div class="sec reveal">
+      <span class="num">01</span>
+      <span class="ttl">Personal Projects</span>
+      <span class="count"><span class="n" data-count="2">2</span> items</span>
+    </div>
+
+    <div class="work reveal">
+
+      <a class="row" href="https://github.com/ndrdlc/rejseplanen-cli">
+        <span class="id">001</span>
+        <span class="yr">2025</span>
+        <span class="tt">[Rejseplanen CLI] <span class="tags">— Python · Pydantic · Click · Rich</span></span>
+        <span class="lk">GitHub</span>
+      </a>
+
+      <a class="row" href="https://madspildmap.dk">
+        <span class="id">002</span>
+        <span class="yr">2026</span>
+        <span class="tt">[Madspild Map] <span class="tags">— Javascript · CSS · HTML · React</span></span>
+        <span class="lk">Website</span>
+      </a>
+    </div>
+
+    <!-- ─── 02 INTERPOLATIONS ─── -->
+    <div class="sec reveal">
+      <span class="num">02</span>
+      <span class="ttl">Interpolations</span>
+      <span class="count"><span class="n" data-count="6">6</span> videos</span>
+    </div>
+
+    <div class="img-grid reveal">
+
+      <figure>
+        <div class="box"> <video src="assets/interpolations/20221019141854.mp4" autoplay muted loop playsinline preload="metadata"></video> </div>
+        <figcaption><b>[Ennui 01]</b><span>2022</span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="box"><video src="assets/interpolations/20221102153412.mp4" autoplay muted loop playsinline preload="metadata"></video> </div>
+        <figcaption><b>[Sea 02]</b><span>2022</span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="box"><video src="assets/interpolations/20221102172853.mp4" autoplay muted loop playsinline preload="metadata"></video> </div>
+        <figcaption><b>[Station 03]</b><span>2022</span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="box"><video src="assets/interpolations/20221110155601.mp4" autoplay muted loop playsinline preload="metadata"></video> </div>
+        <figcaption><b>[Ennui 04]</b><span>2022</span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="box"><video src="assets/interpolations/20221127180717.mp4" autoplay muted loop playsinline preload="metadata"></video> </div>
+        <figcaption><b>[Ennui 05]</b><span>2022</span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="box"><video src="assets/interpolations/20221127184511.mp4" autoplay muted loop playsinline preload="metadata"></video> </div>
+        <figcaption><b>[Ennui 06]</b><span>2022</span></figcaption>
+      </figure>
+
+    </div>
+
+    <!-- ─── 03 VIDEOS ─── -->
+    <div class="sec reveal">
+      <span class="num">03</span>
+      <span class="ttl">Videos</span>
+      <span class="count"><span class="n" data-count="2">2</span> videos</span>
+    </div>
+
+    <div class="img-grid reveal">
+
+      <figure>
+        <div class="box"> <video src="assets/videos/bea_20.mp4" autoplay muted loop playsinline preload="metadata"></video> </div>
+        <figcaption><b>[Bea 01]</b><span>2022</span></figcaption>
+      </figure>
+
+      <figure>
+        <div class="box"><video src="assets/videos/bea_flow.mp4" autoplay muted loop playsinline preload="metadata"></video> </div>
+        <figcaption><b>[Bea 02]</b><span>2022</span></figcaption>
+      </figure>
+    </div>
+
+    <!-- ─── 03 PHOTOGRAPHS ─── -->
+    <div class="sec reveal">
+      <span class="num">03</span>
+      <span class="ttl">Photographs</span>
+      <span class="count"><span class="n" data-count="9">9</span> photos</span>
+    </div>
+
+    <div class="photo-grid reveal">
+      <figure><div class="box"><img src="assets/photos/009652560004_3.jpg" alt="Gaeta" /></div><figcaption><b>[Gaeta, IT]</b><span>2024</span></figcaption></figure>
+      <figure><div class="box"><img src="assets/photos/009914320030_29A.jpg" alt="Copenhagen" /></div><figcaption><b>[Copenhagen, DK]</b><span>2025</span></figcaption></figure>
+      <figure><div class="box"><img src="assets/photos/000545670014_13.jpg" alt="Fastelbro" /></div><figcaption><b>[Fastelbro, SE]</b><span>2025</span></figcaption></figure>
+      <figure><div class="box"><img src="assets/photos/009351060027_.jpg" alt="Turin" /></div><figcaption><b>[Turin, IT]</b><span>2025</span></figcaption></figure>
+      <figure><div class="box"><img src="assets/photos/000662540025_27A.jpg" alt="Copenhagen" /></div><figcaption><b>[Copenhagen, DK]</b><span>2025</span></figcaption></figure>
+      <figure><div class="box"><img src="assets/photos/009351060032_.jpg" alt="Turin" /></div><figcaption><b>[Turin, IT]</b><span>2025</span></figcaption></figure>
+      <figure><div class="box"><img src="assets/photos/000582670001_.jpg" alt="Paris" /></div><figcaption><b>[Paris, FR]</b><span>2026</span></figcaption></figure>
+      <figure><div class="box"><img src="assets/photos/000371830014_13.jpg" alt="Rome" /></div><figcaption><b>[Rome, IT]</b><span>2024</span></figcaption></figure>
+      <figure><div class="box"><img src="assets/photos/000582670033_.jpg" alt="Berlin" /></div><figcaption><b>[Berlin, DE]</b><span>2026</span></figcaption></figure>
+    </div>
+    <a class="see-more reveal" href="https://www.lomography.com/homes/ndrdlc" target="_blank" rel="noopener">
+      <span class="lbl"><b>All photographs</b><span class="dim">— full archive</span></span>
+      <span class="dest">Lomography <span class="arrow">→</span></span>
+    </a>
+
+    <!-- ─── 04 STACK ─── -->
+    <div class="sec reveal">
+      <span class="num">04</span>
+      <span class="ttl">Stack</span>
+      <span class="count">—</span>
+    </div>
+
+    <div class="stack reveal">
+      <span class="k">Languages</span>      <span class="v">Italian, English, Danish</span>
+      <span class="k">Technical Languages</span>      <span class="v">Python, TypeScript, JavaScript, SQL, R</span>
+      <span class="k">ML / AI</span>        <span class="v">PyTorch, TensorFlow, Transformers, Diffusers, Scikit-Learn, LangChain</span>
+      <span class="k">Data & Viz</span>           <span class="v">Pandas, NumPy, OpenCV, Matplotlib, Plotly, PowerBI, Tableau</span>
+      <span class="k">Cloud & Infra</span>          <span class="v">Azure, AzureDevOps, GCP, AWS, Terraform, Docker</span>
+      <span class="k">Dev Tools</span>   <span class="v">FastAPI, DataDog, Langfuse, Wandb</span>
+    </div>
+
+    <!-- ─── 05 CONTACT ─── -->
+    <div class="sec reveal">
+      <span class="num">05</span>
+      <span class="ttl">Contact</span>
+      <span class="count">—</span>
+    </div>
+
+    <div class="contact reveal">
+      <div class="row">
+        <span class="k">Email</span>
+        <span class="dots"></span>
+        <a class="fill" href="mailto:andreadiluca10@gmail.com">andreadiluca10@gmail.com</a>
+      </div>
+      <div class="row">
+        <span class="k">GitHub</span>
+        <span class="dots"></span>
+        <a class="fill" href="https://github.com/ndrdlc">github.com/ndrdlc</a>
+      </div>
+      <div class="row">
+        <span class="k">LinkedIn</span>
+        <span class="dots"></span>
+        <a class="fill" href="https://linkedin.com/in/andreadiluca10">linkedin.com/in/andreadiluca10</a>
+      </div>
+      <div class="row">
+        <span class="k">Instagram</span>
+        <span class="dots"></span>
+        <a class="fill" href="https://instagram.com/ndrdlc">@ndrdlc</a>
+      </div>
+      <!-- <div class="row">
+        <span class="k">CV</span>
+        <span class="dots"></span>
+        <a class="fill" href="assets/cv.pdf">Download PDF</a>
+      </div> -->
+      <div class="row">
+        <span class="k">Location</span>
+        <span class="dots"></span>
+        <span class="v">Copenhagen, DK</span>
+      </div>
+      <div class="row">
+        <span class="k">Status</span>
+        <span class="dots"></span>
+        <span class="v">Open to work</span>
+      </div>
+    </div>
+
+    <!-- ─── FOOTER ─── -->
+    <footer class="reveal">
+      <span>© <span id="copy"></span> Andrea Di Luca</span>
+      <span><a class="fill" href="#">Back to top</a></span>
+    </footer>
+
+  </div>
+
+  <script>
+    /* year stamp */
+    const y = new Date().getFullYear();
+    document.getElementById('year').textContent = y;
+    document.getElementById('copy').textContent = y;
+
+    /* live clock — HH:MM:SS local */
+    const clockEl = document.getElementById('clock');
+    function tick() {
+      const d = new Date();
+      const pad = n => String(n).padStart(2, '0');
+      clockEl.textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    /* reveal sections on scroll */
+    const revealIO = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          revealIO.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => revealIO.observe(el));
+
+    /* count tick-up — mechanical, ~600ms */
+    function countUp(el) {
+      const target = parseInt(el.dataset.count, 10);
+      if (isNaN(target)) return;
+      const duration = 600;
+      const start = performance.now();
+      function frame(now) {
+        const t = Math.min(1, (now - start) / duration);
+        // step-y feel: linear with a slight ease at end
+        const eased = 1 - Math.pow(1 - t, 2);
+        el.textContent = Math.floor(eased * target);
+        if (t < 1) requestAnimationFrame(frame);
+        else el.textContent = target;
+      }
+      el.textContent = '0';
+      requestAnimationFrame(frame);
+    }
+    const countIO = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          countUp(e.target);
+          countIO.unobserve(e.target);
+        }
+      });
+    }, { threshold: 1 });
+    document.querySelectorAll('.count .n').forEach(el => countIO.observe(el));
+
+    /* videos: play in viewport, pause out, click to toggle */
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const videos = document.querySelectorAll('.img-grid video');
+    const setPausedClass = v => v.parentElement.classList.toggle('paused', v.paused);
+
+    videos.forEach(v => {
+      v.addEventListener('play',  () => setPausedClass(v));
+      v.addEventListener('pause', () => setPausedClass(v));
+      v.addEventListener('click', () => v.paused ? v.play() : v.pause());
+      if (reduce) { v.removeAttribute('autoplay'); v.pause(); }
+    });
+
+    if (!reduce) {
+      const videoIO = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          const v = e.target;
+          if (e.isIntersecting) v.play().catch(() => {});
+          else v.pause();
+        });
+      }, { threshold: 0.25 });
+      videos.forEach(v => videoIO.observe(v));
+    }
+  </script>
+
+</body>
+</html>
