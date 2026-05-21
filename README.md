@@ -1,6 +1,6 @@
-# Andrea Di Luca — Personal Folio
+# My personal folio
 
-My personal portfolio: a single-page site with projects, creative work and contact links.
+A single-page site with projects, creative work and contact links.
 
 **Live site:** [https://ndrdlc.github.io](https://ndrdlc.github.io)
 
