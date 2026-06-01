@@ -260,6 +260,48 @@
       grid-template-columns: 1fr 1fr;
       gap: 24px;
     }
+
+    /* ─── WIDE VIDEO (natural aspect ratio) ─── */
+    .img-wide { margin-bottom: 24px; }
+    .img-wide .box {
+      background: var(--ink);
+      position: relative;
+      overflow: hidden;
+      outline: 1px solid var(--rule);
+      outline-offset: -1px;
+      transition: outline-offset var(--med) var(--ease);
+      cursor: pointer;
+    }
+    .img-wide .box:hover { outline-offset: 4px; }
+    .img-wide .box video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .img-wide .box::after {
+      content: "[ LOOP ]";
+      position: absolute;
+      top: 8px; right: 10px;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      color: var(--bg);
+      opacity: 0.65;
+      pointer-events: none;
+      font-weight: 400;
+    }
+    .img-wide .box.paused::after { content: "[ PAUSED ]"; opacity: 0.85; }
+    .img-wide figcaption {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 14px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: 1px solid var(--rule);
+      border-top: 0;
+    }
+    .img-wide figcaption b { font-weight: 500; }
+    .img-wide figcaption span { opacity: 0.6; }
     .img-grid figure { background: var(--bg); }
     .img-grid .box {
       aspect-ratio: 1/1;
@@ -418,6 +460,13 @@
     .photo-grid figcaption b { font-weight: 500; }
     .photo-grid figcaption span { opacity: 0.6; }
 
+    /* ─── WORK NOTE ─── */
+    .note {
+      font-size: 14px;
+      margin: 24px 0 32px;
+    }
+    .note b { font-weight: 500; }
+
     /* ─── STACK LIST ─── */
     .stack {
       display: grid;
@@ -559,14 +608,19 @@
     </div>
 
     <div class="work reveal">
-
       <a class="row" href="https://github.com/ndrdlc/rejseplanen-cli">
         <span class="id">001</span>
         <span class="yr">2025</span>
         <span class="tt">[Rejseplanen CLI] <span class="tags">— Python · Pydantic · Click · Rich</span></span>
         <span class="lk">GitHub</span>
       </a>
+    </div>
 
+    <p class="note reveal">
+      A command-line client for <b>Rejseplanen</b>, Denmark's national journey planner — routes, timetables, and live departures straight from the terminal.
+    </p>
+
+    <div class="work reveal" style="margin-top: 56px;">
       <a class="row" href="https://madspildmap.dk">
         <span class="id">002</span>
         <span class="yr">2026</span>
@@ -575,9 +629,73 @@
       </a>
     </div>
 
-    <!-- ─── 02 INTERPOLATIONS ─── -->
+    <p class="note reveal">
+      An interactive map that generates recipes from soon-to-expire groceries in your local supermarkets — turning would-be food waste into something cookable tonight.
+    </p>
+
+    <!-- ─── 02 WORK ─── -->
     <div class="sec reveal">
       <span class="num">02</span>
+      <span class="ttl">Work</span>
+      <span class="count"><span class="n" data-count="2">2</span> items</span>
+    </div>
+
+    <div class="work reveal">
+      <a class="row" href="https://www.arked.ai/">
+        <span class="id">001</span>
+        <span class="yr">2024</span>
+        <span class="tt">[Arked] <span class="tags">— Generative AI · Computer Vision · Renovation</span></span>
+        <span class="lk">Website</span>
+      </a>
+    </div>
+
+    <p class="note reveal">
+      <b>Arked</b> is an architecture studio sitting at the intersection of architecture and artificial intelligence. Its premise — renovate rather than rebuild — shifts focus away from new construction and toward what already exists, cutting the CO₂ cost of building anew. I built the backbone of the system: a generative AI that lets users visualise renovations before a single wall moves, <b>LoRA-fine-tuned</b> on specific Danish architectural features (tagkvist, sommerhus, roof window, and many others) and Danish kitchen and bathroom styles.
+    </p>
+
+    <figure class="img-wide reveal">
+      <div class="box"><video src="assets/videos/VideoXTechBBQ.mp4" autoplay muted loop playsinline preload="metadata"></video></div>
+      <figcaption><b>[Demo]</b><span>2024</span></figcaption>
+    </figure>
+
+    <div class="img-grid reveal">
+      <figure>
+        <div class="box"><img src="assets/photos/IMG_9101.png" alt="Original room" /></div>
+        <figcaption><b>[Original]</b><span>2024</span></figcaption>
+      </figure>
+      <figure>
+        <div class="box"><img src="assets/photos/generated_IMG_9101.png" alt="Arked generated renovation" /></div>
+        <figcaption><b>[Generated]</b><span>2024</span></figcaption>
+      </figure>
+    </div>
+
+    <div class="work reveal" style="margin-top: 56px;">
+      <a class="row" href="https://www.arneaksel.dk/">
+        <span class="id">002</span>
+        <span class="yr">2024</span>
+        <span class="tt">[Arne Aksel] <span class="tags">— Generative AI · Interiors · Renovation</span></span>
+        <span class="lk">Website</span>
+      </a>
+    </div>
+
+    <p class="note reveal">
+      The same approach applied to <b>Arne Aksel</b> — extending the engine from architectural shells to interior renovations, with the model <b>LoRA-fine-tuned</b> on the Arne Aksel product catalogue so generated rooms are furnished with the studio's own pieces. The page has since been discontinued.
+    </p>
+
+    <div class="img-grid reveal">
+      <figure>
+        <div class="box"><img src="assets/photos/kitchen_image.jpeg" alt="Original kitchen" /></div>
+        <figcaption><b>[Original]</b><span>2024</span></figcaption>
+      </figure>
+      <figure>
+        <div class="box"><img src="assets/photos/generated_image_arne_aksel.png" alt="Arne Aksel generated interior" /></div>
+        <figcaption><b>[Generated]</b><span>2024</span></figcaption>
+      </figure>
+    </div>
+
+    <!-- ─── 03 INTERPOLATIONS ─── -->
+    <div class="sec reveal">
+      <span class="num">03</span>
       <span class="ttl">Interpolations</span>
       <span class="count"><span class="n" data-count="6">6</span> videos</span>
     </div>
@@ -616,9 +734,9 @@
 
     </div>
 
-    <!-- ─── 03 VIDEOS ─── -->
+    <!-- ─── 04 VIDEOS ─── -->
     <div class="sec reveal">
-      <span class="num">03</span>
+      <span class="num">04</span>
       <span class="ttl">Videos</span>
       <span class="count"><span class="n" data-count="2">2</span> videos</span>
     </div>
@@ -636,9 +754,9 @@
       </figure>
     </div>
 
-    <!-- ─── 03 PHOTOGRAPHS ─── -->
+    <!-- ─── 05 PHOTOGRAPHS ─── -->
     <div class="sec reveal">
-      <span class="num">04</span>
+      <span class="num">05</span>
       <span class="ttl">Photographs</span>
       <span class="count"><span class="n" data-count="9">9</span> photos</span>
     </div>
@@ -659,9 +777,9 @@
       <span class="dest">Lomography <span class="arrow">→</span></span>
     </a>
 
-    <!-- ─── 04 STACK ─── -->
+    <!-- ─── 06 STACK ─── -->
     <div class="sec reveal">
-      <span class="num">04</span>
+      <span class="num">06</span>
       <span class="ttl">Stack</span>
       <span class="count">—</span>
     </div>
@@ -675,9 +793,9 @@
       <span class="k">Dev Tools</span>   <span class="v">FastAPI, DataDog, Langfuse, Wandb</span>
     </div>
 
-    <!-- ─── 05 CONTACT ─── -->
+    <!-- ─── 07 CONTACT ─── -->
     <div class="sec reveal">
-      <span class="num">05</span>
+      <span class="num">07</span>
       <span class="ttl">Contact</span>
       <span class="count">—</span>
     </div>
@@ -784,7 +902,7 @@
 
     /* videos: play in viewport, pause out, click to toggle */
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const videos = document.querySelectorAll('.img-grid video');
+    const videos = document.querySelectorAll('.img-grid video, .img-wide video');
     const setPausedClass = v => v.parentElement.classList.toggle('paused', v.paused);
 
     videos.forEach(v => {
